@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stopwatch</title>
+    <style>
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        background-color: #e4f763;
+        font-family: 'Arial', sans-serif;
+        border: 20px solid #34db6e;
+    /* Add a border to the body */
+    }
+
+.stopwatch {
+    text-align: center;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 80px;
+    max-width: 300px;
+    margin: auto;
+}
+
+/* (unchanged) */
+
+.display {
+    font-size: 2.5em;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.controls {
+    margin-bottom: 20px;
+}
+
+.control {
+    font-size: 1em;
+    margin: 10px;
+    padding: 8px 15px;
+    cursor: pointer;
+    background-color: #4CAF50;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+}
+
+.control:hover {
+    background-color: #45a049;
+}
+
+#lapList {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    text-align: left;
+}
+
+#lapList li {
+    margin-bottom: 5px;
+    padding: 5px;
+    background-color: #eee;
+    border-radius: 5px;
+}
+</style>
+</head>
+
+<body>
+    <div class="stopwatch">
+        <div class="display" id="display">00:00:00</div>
+        <div class="controls">
+            <button class="control" id="startPause" onclick="startPause()">Start</button>
+            <button class="control" id="reset" onclick="reset()">Reset</button>
+            <button class="control" id="lap" onclick="lap()">Lap</button>
+        </div>
+        <ul id="lapList"></ul>
+    </div>
+
+<script>
+let startTime;
+let isRunning = false;
+let lapCounter = 1;
+
+function startPause() {
+    const startPauseButton = document.getElementById("startPause");
+
+    if (!isRunning) {
+        startPauseButton.textContent = "Pause";
+        startTime = new Date().getTime() - lapCounter * 1000;
+        updateDisplay();
+        intervalId = setInterval(updateDisplay, 1000);
+    } else {
+        startPauseButton.textContent = "Resume";
+        clearInterval(intervalId);
+    }
+
+    isRunning = !isRunning;
+}
+
+function reset() {
+    const startPauseButton = document.getElementById("startPause");
+    startPauseButton.textContent = "Start";
+    clearInterval(intervalId);
+    isRunning = false;
+    lapCounter = 1;
+    updateDisplay();
+    document.getElementById("lapList").innerHTML = "";
+}
+
+function lap() {
+    if (isRunning) {
+        const lapTime = new Date().getTime() - startTime;
+        const formattedTime = formatTime(lapTime);
+        const lapList = document.getElementById("lapList");
+        const lapItem = document.createElement("li");
+        lapItem.textContent = `Lap ${lapCounter}: ${formattedTime}`;
+        lapList.appendChild(lapItem);
+        lapCounter++;
+    }
+}
+
+function updateDisplay() {
+    const currentTime = new Date().getTime();
+    const elapsedTime = currentTime - startTime;
+    const formattedTime = formatTime(elapsedTime);
+    document.getElementById("display").textContent = formattedTime;
+}
+
+function formatTime(milliseconds) {
+    const totalSeconds = Math.floor(milliseconds / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    const hours = Math.floor(minutes / 60);
+    const formattedHours = String(hours).padStart(2, "0");
+    const formattedMinutes = String(minutes % 60).padStart(2, "0");
+    const formattedSeconds = String(seconds).padStart(2, "0");
+    return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
+}
+</script>
+</body>
+
+</html>
